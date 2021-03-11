@@ -57,7 +57,7 @@ function ChatRoom() {
 			uid,
 			photoURL,
 		});
-
+		console.log(process.env.REACT_APP_APP_ID);
 		setFormValue('');
 		dummy.current.scrollIntoView({ behavior: 'smooth' });
 	};
