@@ -9,12 +9,12 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 
 firebase.initializeApp({
-	apiKey: process.env.REACT_APP_API_KEY,
-	authDomain: process.env.REACT_APP_AUTH_DOMAIN,
-	projectId: process.env.REACT_APP_PROJECT_ID,
-	storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
-	messagingSenderId: process.env.REACT_APP_SENDER_ID,
-	appId: process.env.REACT_APP_APP_ID,
+	apiKey: `${process.env.REACT_APP_API_KEY}`,
+	authDomain: `${process.env.REACT_APP_AUTH_DOMAIN}`,
+	projectId: `${process.env.REACT_APP_PROJECT_ID}`,
+	storageBucket: `${process.env.REACT_APP_STORAGE_BUCKET}`,
+	messagingSenderId: `${process.env.REACT_APP_SENDER_ID}`,
+	appId: `${process.env.REACT_APP_APP_ID}`,
 });
 const auth = firebase.auth();
 const firestore = firebase.firestore();
@@ -45,9 +45,14 @@ function SignOut() {
 function ChatRoom() {
 	const dummy = useRef();
 	const messagesRef = firestore.collection('messages');
-	const query = messagesRef.orderBy('createdAt').limit(25);
+	const query = messagesRef.orderBy('createdAt');
 	const [messages] = useCollectionData(query, { idField: 'id' });
 	const [formValue, setFormValue] = useState('');
+	const handleChange = (e) => {
+		e.preventDefault();
+		setFormValue(e.target.value);
+		console.log(formValue);
+	};
 	const sendMessage = async (e) => {
 		e.preventDefault();
 		const { uid, photoURL } = auth.currentUser;
@@ -57,10 +62,11 @@ function ChatRoom() {
 			uid,
 			photoURL,
 		});
-		console.log(process.env.REACT_APP_APP_ID);
+
 		setFormValue('');
 		dummy.current.scrollIntoView({ behavior: 'smooth' });
 	};
+
 	return (
 		<>
 			<main>
@@ -72,7 +78,7 @@ function ChatRoom() {
 			<form onSubmit={sendMessage}>
 				<input
 					value={formValue}
-					onChange={(e) => setFormValue(e.target.value)}
+					onChange={handleChange}
 					placeholder="say something nice"
 				/>
 
@@ -87,6 +93,8 @@ function ChatRoom() {
 function ChatMessage(props) {
 	const { text, uid, photoURL } = props.message;
 	const messageClass = uid === auth.currentUser.uid ? 'sent' : 'received';
+	console.log(text);
+
 	return (
 		<div className={`message ${messageClass}`}>
 			<img src={photoURL} alt="user" />
